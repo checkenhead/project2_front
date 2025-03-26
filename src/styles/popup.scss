@@ -1,0 +1,116 @@
+#popup_root {
+  > #dim {
+    pointer-events: none;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    backdrop-filter: blur(0);
+    background-color: rgba(0, 0, 0, 0);
+    transition:
+        backdrop-filter 0.1s ease,
+        background-color 0.1s ease;
+  }
+  &:has(.dim_normal) {
+    > #dim {
+      background-color: rgba(0, 0, 0, 0.2);
+    }
+  }
+  &:has(.dim_blur) {
+    > #dim {
+      backdrop-filter: blur(3px);
+    }
+  }
+}
+#popup_root > .popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  outline: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+
+  &.none_dim {
+    pointer-events: none;
+  }
+
+  > .dim {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: transparent;
+    // &.dim_normal {
+    // }
+    // &.dim_transparent {
+    // }
+  }
+
+  > .content_box {
+    position: absolute;
+    max-width: calc(100vw - 1rem);
+    max-height: calc(100vh - 1rem);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 0.5rem;
+
+    transition: transform 0.4s ease;
+
+    &.alert,
+    &.confirm,
+    &.toast {
+      width: 300px;
+      background-color: var(--card-background-color);
+      border: 1px solid var(--border-color);
+      border-radius: 5px;
+      padding: 0.5rem;
+      //box-shadow: 3px 3px 3px var(--border-color);
+    }
+
+    &.top {
+      top: 0;
+      transform: translateY(-100%);
+      &.animation {
+        transform: translateY(50px);
+      }
+    }
+    &.bottom {
+      bottom: 0;
+      transform: translateY(100%);
+      &.animation {
+        transform: translateY(-50px);
+      }
+    }
+
+    > .content {
+      position: relative;
+    }
+
+    > .buttons {
+      position: relative;
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+
+      gap: 0.5rem;
+
+      > .button_box {
+        flex: 1;
+
+        > .button {
+          flex: 1;
+          width: 100%;
+        }
+      }
+    }
+  }
+}

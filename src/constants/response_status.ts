@@ -1,0 +1,37 @@
+const SUCCESS = {
+  'OK': 200,
+  'CREATED': 201,
+} as const
+const REDIRECTION = {
+  'MOVED_PERMANENTLY': 301,
+  'FOUND': 302,
+  'NOT_MODIFIED': 304,
+} as const
+const CLIENT_ERROR = {
+  'BAD_REQUEST': 400,
+  'UNAUTHORIZED': 401,
+  'FORBIDDEN': 403,
+  'NOT_FOUND': 404,
+  'REQUEST_TIMEOUT': 408,
+  'TOO_MANY_REQUEST': 429,
+} as const
+const SERVER_ERROR = {
+  'INTERNAL_SERVER_ERROR': 500,
+  'NOT_IMPLEMENTED': 501,
+  'BAD_GATEWAY': 502,
+  'SERVICE_UNAVAILABLE': 503,
+  'GATEWAY_TIMEOUT': 504,
+} as const
+export const CUSTOM_ERROR = {
+  'REQUEST_CANCELED': 4999,
+  'UNKNOWN_ERROR': 9999,
+} as const
+export const STATUS = {
+  SUCCESS,
+  REDIRECTION,
+  ERROR: {
+    ...CLIENT_ERROR,
+    ...SERVER_ERROR,
+    ...CUSTOM_ERROR,
+  },
+} as const
