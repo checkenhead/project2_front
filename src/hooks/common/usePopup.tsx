@@ -1,11 +1,12 @@
 import '@/styles/popup.scss'
 import { useSetRecoilState } from 'recoil'
 import { popupDataState } from '@/atoms/global'
-import React, { useCallback, useEffect, useId, useRef, useState } from 'react'
+import React, { cloneElement, ReactNode, useCallback, useEffect, useId, useRef, useState } from 'react'
 
 import Icon from '@/components/common/icon'
 import { Card } from '@/components/layout/card'
 import { Flex } from '@/components/layout/flex'
+import Button from '@/components/io/button.tsx'
 
 const POPUP_ID_PREFIX = 'popup_'
 
@@ -36,22 +37,22 @@ export const usePopup = () => {
     const buttons = !!props.buttons
       ? props.buttons
       : ([
-        {
-          content: '취소',
-          callback: (close) => {
-            props.onClickCancel?.()
-            close()
+          {
+            content: '취소',
+            callback: (close) => {
+              props.onClickCancel?.()
+              close()
+            },
           },
-        },
-        {
-          submit: true,
-          content: '확인',
-          callback: (close) => {
-            props.onClickOk?.()
-            close()
+          {
+            submit: true,
+            content: '확인',
+            callback: (close) => {
+              props.onClickOk?.()
+              close()
+            },
           },
-        },
-      ] as Array<ConfirmButtonType>)
+        ] as Array<ConfirmButtonType>)
 
     setPopupData({
       id,
@@ -66,7 +67,7 @@ export const usePopup = () => {
           buttons={buttons}
         >
           <Flex.Row xAlign='start' gap='0.5rem'>
-            <Icon type='infoCircle' width='75px' />
+            <Icon type='infoCircle' size='75px' />
             <Flex.Col gap='0.3rem'>
               {!!props.title && <Card.Title>{props.title}</Card.Title>}
               {props.message}
@@ -102,7 +103,7 @@ export const usePopup = () => {
           ]}
         >
           <Flex.Row gap='0.5rem'>
-            <Icon type='alertTriangle' width='75px' />
+            <Icon type='alertTriangle' size='75px' />
             <Flex.Col gap='0.3rem'>
               {!!props.title && <Card.Title>{props.title}</Card.Title>}
               {props.message}
@@ -128,7 +129,7 @@ export const usePopup = () => {
           animation={2000}
         >
           <Flex.Row yAlign='center' gap='0.3rem'>
-            <Icon type='infoCircle' width='25px' height='25px' />
+            <Icon type='infoCircle' size='25px' />
             {!!props.title && <Card.Title>{props.title}</Card.Title>}
             {props.message}
           </Flex.Row>
@@ -152,7 +153,7 @@ export const usePopup = () => {
     return newId
   }, [])
 
-  const setPopupData = useCallback((newPopup: { id: string; node: React.ReactNode }) => {
+  const setPopupData = useCallback((newPopup: { id: string; node: ReactNode }) => {
     _setPopupData((prev) => [...prev.filter((popup) => !!document.getElementById(popup.id)), newPopup])
   }, [])
 
@@ -160,24 +161,24 @@ export const usePopup = () => {
 }
 
 type ControllerProps = {
-  children?: React.ReactNode
-  open?: EnumType
+  children?: ReactNode
+  open?: number
   onClose?: () => void
 }
 const Controller = (props: ControllerProps) => {
-  if (!props.open) return <></>
+  if (props.open === undefined) return <></>
 
   const child = React.Children.toArray(props.children)
-  .filter((child: any) => child.type.name === 'Container')
-  .find((child: any) => child.props.popupIndex === props.open)
+    .filter((child: any) => child.type.name === 'Container')
+    .find((child: any) => child.props.popupIndex === props.open)
 
   if (!!child) {
-    return React.cloneElement(child as JSX.Element, { onClose: props.onClose })
+    return cloneElement(child as JSX.Element, { onClose: props.onClose })
   } else return <></>
 }
 
 type ContainerProps = {
-  children?: React.ReactNode
+  children?: ReactNode
   id?: string
   className?: string
   autoAllocatedId?: string
@@ -193,11 +194,11 @@ type ContainerProps = {
   animation?: boolean | number
   buttons?: {
     submit?: boolean
-    content?: React.ReactNode
+    content?: ReactNode
     callback?: (close: () => void, e?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
   }[]
   onClose?: () => void
-  popupIndex?: EnumType
+  popupIndex?: number
 }
 
 export const Container = (props: ContainerProps) => {
@@ -262,7 +263,7 @@ export const Container = (props: ContainerProps) => {
         {!!props.buttons && (
           <div className='buttons'>
             {props.buttons?.map((button, index) => (
-              <Io.Button
+              <Button
                 submit={button.submit}
                 width='100%'
                 key={index}
@@ -271,7 +272,7 @@ export const Container = (props: ContainerProps) => {
                 }}
               >
                 {button.content}
-              </Io.Button>
+              </Button>
             ))}
           </div>
         )}

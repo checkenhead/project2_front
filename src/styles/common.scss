@@ -9,6 +9,7 @@
   --primary-color: #000000;
   --default-border-color: #dddddd;
   --valid-border-color: green;
+  --invalid-color: red;
   --invalid-border-color: red;
 
   --disabled-button-background-color: #eeeeee;
@@ -29,7 +30,8 @@
     --sub-font-color: #999999ff;
     --placeholder-color: #bbbbbb;
     --border-color: #dddddd;
-    --shadow-color: #999999;
+    --primary-shadow-color: rgba(0, 0, 0, 0.1);
+    --sub-shadow-color: #ffffff;
   }
 
   &:has([data-theme='dark']) {
@@ -42,10 +44,12 @@
     --sub-font-color: #999999ff;
     --placeholder-color: #dddddd;
     --border-color: #191919ff;
-    --shadow-color: #000000;
+    --primary-shadow-color: rgba(0, 0, 0, 0.2);
+    --sub-shadow-color: rgba(0, 0, 0, 0.1);
   }
 
-  font-family: -apple-system, Arial, Verdana, Tahoma, 'Trebuchet MS', 'Times New Roman', Georgia;
+  //font-family: -apple-system, Arial, Verdana, Tahoma, 'Trebuchet MS', 'Times New Roman', Georgia;
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -64,7 +68,6 @@ body {
   overflow: hidden;
 }
 
-
 #root {
   width: 100%;
   height: 100%;
@@ -72,9 +75,10 @@ body {
   overflow: scroll;
 
   transition:
-      background-color 0.2s ease,
-      color 0.2s ease,
-      --scrollbar-color 0.5s ease;
+    background-color 0.2s ease,
+    box-shadow 0.2s ease,
+    color 0.2s ease,
+    --scrollbar-color 0.5s ease;
 
   background-color: var(--background-color);
   color: var(--font-color);
@@ -104,6 +108,26 @@ ol {
   font-weight: normal;
 }
 
+a {
+  display: inline-block;
+  color: inherit;
+  text-decoration: none;
+  transition: transform 0.1s ease-in-out;
+  &:link {
+    font-weight: 600;
+  }
+  //&:visited {
+  //}
+
+  &:hover,
+  &:focus {
+    text-decoration: underline;
+  }
+  &:active {
+    transform: translateY(0.1rem);
+  }
+}
+
 .common_click {
   &:hover {
     font-weight: bold;
@@ -118,4 +142,3 @@ ol {
 .pointer {
   cursor: pointer;
 }
-

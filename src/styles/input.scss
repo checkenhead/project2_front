@@ -1,0 +1,105 @@
+.form_input_wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+
+  .input {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 0 solid var(--border-color);
+    padding: 0;
+    outline: none;
+    font-size: 1em;
+    color: var(--font-color);
+    background-color: transparent;
+
+    &:disabled {
+      //color: var(--font-color);
+      color: gray;
+      background-color: transparent;
+    }
+
+    //border: 1px dashed red;
+  }
+}
+
+.labeled_input_box {
+  width: 100%;
+  height: auto;
+  font-size: 1rem;
+
+  .labeled_input {
+    width: 100%;
+    height: calc(2em + 0.2em);
+
+    overflow: hidden;
+    position: relative;
+    border: 1px solid var(--border-color);
+    border-radius: 0.2em;
+    padding: 0.1em;
+    background-color: rgba(200, 200, 200, 0.1);
+    cursor: text;
+
+    display: flex;
+    flex-direction: column;
+
+    transition:
+      border 0.2s ease-in-out,
+      border-radius 0.2s ease-in-out,
+      background-color 0.2s ease-in-out;
+
+    > .input_label_space {
+      width: 100%;
+      height: 0;
+      flex-shrink: 0;
+      transition: height 0.2s ease-in-out;
+    }
+    > .input_label {
+      position: absolute;
+      height: 2em;
+      color: var(--placeholder-color);
+      pointer-events: none;
+      user-select: none;
+      padding: 0 0.2em;
+      display: flex;
+      align-items: center;
+
+      transition:
+        color 0.2s ease-in-out,
+        font-size 0.2s ease-in-out,
+        height 0.2s ease-in-out;
+    }
+    > .input_underline {
+      position: absolute;
+      display: block;
+      width: 0;
+      height: 2px;
+      bottom: 0;
+      background: var(--submit-button-background-color);
+
+      transition: width 0.2s ease-in-out;
+    }
+
+    &:has(.active) {
+      border: 1px solid transparent;
+      background-color: transparent;
+
+      > .input_label_space {
+        height: 0.75em;
+      }
+      > .input_label {
+        font-size: 0.75em;
+        color: var(--font-color);
+        height: 1em;
+      }
+      > .input_underline {
+        width: 100%;
+      }
+    }
+
+    &:has(.disabled) {
+      cursor: default;
+    }
+  }
+}

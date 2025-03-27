@@ -14,8 +14,7 @@ const AuthenticationFilter = (props: AuthenticationFilterProps) => {
   const hasAuth = useMemo(() => {
     if (allow.includes(AUTHORITIES.ALL)) return true
     else if (allow.includes(AUTHORITIES.ANONYMOUS_ONLY)) {
-      if (user === undefined) return true
-      else return false
+      return user === undefined
     } else {
       return !!user?.authorities.some((auth) => allow.some((_auth) => _auth === auth))
     }

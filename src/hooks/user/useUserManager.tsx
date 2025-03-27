@@ -4,8 +4,8 @@ import { useRecoilState } from 'recoil'
 import { userState, UserType } from '@/atoms/global'
 import jwtUtil from '@/utils/jwt'
 import { deepCompare } from '@/utils/common'
-import useFetcher from '@/hooks/common/useFetcher'
 import { usePopup } from '@/hooks/common/usePopup'
+import useCustomFetcher from '@/hooks/common/useFetcher'
 
 type UserManagerProps = {
   /** 로그인 되어있지 않은 경우 refresh token이 있으면 로그인 시도 */
@@ -15,7 +15,7 @@ type UserManagerProps = {
 const useUserManager = (props?: UserManagerProps) => {
   const { autoLogin = false } = { ...props }
   const [user, setUser] = useRecoilState(userState)
-  const [, fetcherUtil] = useFetcher()
+  const [, fetcherUtil] = useCustomFetcher()
   const { toast } = usePopup()
   const navigate = useNavigate()
 

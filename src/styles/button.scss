@@ -1,0 +1,79 @@
+.button_box {
+  width: 100%;
+  height: auto;
+  font-size: 1rem;
+
+  > .button {
+    position: relative;
+
+    width: 100%;
+    height: calc(2em + 0.2em);
+    font-size: 1em;
+    text-wrap: nowrap;
+    padding: 0.1em;
+    background-color: transparent;
+    cursor: pointer;
+
+    border: 1px solid var(--border-color);
+    border-radius: 0.2em;
+    color: var(--font-color);
+
+    transition:
+      border 0.1s ease-in-out,
+      background-color 0.1s ease-in-out,
+      color 0.1s ease-in-out,
+      transform 0.1s ease-in-out,
+      box-shadow 0.1s ease-in-out;
+
+    > .content {
+      padding: 0.2em;
+      transition: opacity 0.1s ease-in-out;
+    }
+    > .pending_box {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      padding: 0.1em;
+    }
+  }
+
+  &.submit {
+    > .button {
+      border: 1px solid var(--submit-button-background-color);
+      background-color: var(--submit-button-background-color);
+      color: var(--submit-font-color);
+    }
+  }
+  &.disabled {
+    > .button {
+      border-color: var(--disabled-button-background-color);
+      background-color: var(--disabled-button-background-color);
+      color: var(--disabled-button-font-color);
+      cursor: default;
+    }
+  }
+  &.pending {
+    > .button {
+      //background-color: var(--pending-button-background-color);
+      //color: var(--pending-button-font-color);
+      cursor: default;
+
+      > .content {
+        opacity: 0;
+      }
+    }
+  }
+
+  &:hover:not(.disabled, .pending) {
+    > .button {
+      box-shadow: 0.06em 0.06em 0.1em 0.02em var(--shadow-color);
+    }
+  }
+  &:active:not(.disabled, .pending) {
+    > .button {
+      transform: translateY(0.1rem);
+    }
+  }
+}

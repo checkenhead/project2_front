@@ -1,0 +1,30 @@
+.icon {
+  transition:
+    stroke-width 0.3s ease,
+    transform 0.1s ease;
+  stroke-width: 0.15rem !important;
+
+  &.stroke_animation:active {
+    transform: scale(0.95);
+  }
+
+  &.stroke_animation:hover {
+    stroke-width: 0.2rem !important;
+  }
+
+  &.rotate_animation:hover {
+    animation: rotate_animation 0.5s ease forwards;
+  }
+}
+
+@keyframes rotate_animation {
+  0% {
+    transform: rotate(0deg);
+  }
+  90% {
+    transform: rotate(95deg);
+  }
+  100% {
+    transform: rotate(90deg);
+  }
+}

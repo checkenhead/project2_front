@@ -3,6 +3,7 @@ import React, { cloneElement, ReactNode, useEffect, useMemo, useRef, useState } 
 import { SimpleLayout } from '@/components/layout/simple_layout'
 import { useResizeObserver } from '@/hooks/common/useResizeObserver'
 import { getClassNames, objUtil } from '@/utils/common'
+import { ValidationType } from '@/hooks/common/useCustomState.tsx'
 
 type OutlinedStyleType<T> = true extends T ? { outlined?: T; border?: string } : { outlined?: T }
 type ElevatedStyleType<T> = true extends T ? { elevated?: T; boxShadow?: string } : { elevated?: T }
@@ -72,22 +73,22 @@ const CardTransition = (props: CardTransitionProps) => {
     () =>
       children
         ? { ...convertedRect, ...customBoxSize, opacity: '1' }
-        : { width: '0px', height: '0px', ...customBoxSize, opacity: '0' },
+        : { width: '0', height: '0', ...customBoxSize, opacity: '0' },
     [children, convertedRect, customBoxSize]
   )
   const transition = useMemo(
     () =>
       durationSec
         ? {
-          transition: `width ${durationSec}s ease-in-out, height ${durationSec}s ease-in-out, opacity ${durationSec}s ease-in-out`,
-        }
+            transition: `width ${durationSec}s ease-in-out, height ${durationSec}s ease-in-out, opacity ${durationSec}s ease-in-out`,
+          }
         : {},
     [durationSec]
   )
   const cardTransitionBoxStyle = useMemo(() => ({ ...currentBoxStyle, ...transition }), [currentBoxStyle, transition])
 
   const cardTransitionClassName = useMemo(
-    () => getClassNames('card_transition_box', { disabled: !deferredChildren }, 'disabled'),
+    () => getClassNames('card_transition_box', { disabled: !deferredChildren }),
     [deferredChildren]
   )
 
@@ -160,6 +161,22 @@ const CardTitleHeading4 = (props: CardTitleProps) => CardTitleWrapper({ ...props
 const CardTitleHeading5 = (props: CardTitleProps) => CardTitleWrapper({ ...props, children: <h5>{props.children}</h5> })
 const CardTitleHeading6 = (props: CardTitleProps) => CardTitleWrapper({ ...props, children: <h6>{props.children}</h6> })
 
+type CardErrorMessageProps<T> = Omit<CardTransitionProps, 'children'> & {
+  name: keyof T
+  validation: ValidationType<T>
+}
+const CardErrorMessage = <T,>({ name, validation, ...rest }: CardErrorMessageProps<T>) => {
+  return (
+    <CardTransition {...rest}>
+      {validation[name].isValid === false && (
+        <CardText padding='1px' color='var(--invalid-color)'>
+          {validation[name].msg}
+        </CardText>
+      )}
+    </CardTransition>
+  )
+}
+
 export const Card = Object.assign(CardContainer, {
   Section: SimpleLayout,
   Transition: CardTransition,
@@ -172,5 +189,6 @@ export const Card = Object.assign(CardContainer, {
     H6: CardTitleHeading6,
   }),
   Text: CardText,
+  ErrorMessage: CardErrorMessage,
   Divider: CardDivider,
 })

@@ -45,10 +45,10 @@ export const windowSizeState = atom<WindowSizeType>({
 })
 
 /* theme */
-export type ThemeType = { by: 'system' | 'user'; mode: 'dark' | 'light' }
+export type ThemeType = { provider: 'system' | 'user'; mode: 'dark' | 'light' }
 export const themeState = atom<ThemeType>({
-  key: 'themeState',
-  default: { by: 'system', mode: 'light' },
+  key: 'theme',
+  default: { provider: 'system', mode: 'light' },
   effects_UNSTABLE: [localPersistAtom],
 })
 

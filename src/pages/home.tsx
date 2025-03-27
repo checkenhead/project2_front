@@ -2,9 +2,6 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useUserManager from '@/hooks/user/useUserManager'
 
-
-
-
 enum POPUP_INDEX {
   CLOSED,
   MY_PAGE,
@@ -19,13 +16,7 @@ const Home = () => {
   const { user, logout } = useUserManager()
   const [popupIndex, setPopupIndex] = useState(POPUP_INDEX.CLOSED)
 
-
-
-  return (
-    <>
-     
-    </>
-  )
+  return <></>
 }
 
 export default Home

@@ -17,7 +17,7 @@ const INIT_PROGRESS: ProgressType = {
   total: undefined,
 }
 
-const useFetcher = (options?: FetcherOptions) => {
+const useCustomFetcher = (options?: FetcherOptions) => {
   const { cancelable = false, autoCancel = false } = { ...options }
 
   const progressIdSequenceRef = useRef<number>(0)
@@ -25,7 +25,7 @@ const useFetcher = (options?: FetcherOptions) => {
   const [progresses, setProgresses] = useState<FetcherProgressesType>({})
   const [currentProgress, setCurrentProgress] = useState<ProgressType | undefined>(undefined)
   const [isPending, setIsPending] = useState<boolean>(false)
-  const [fetcherInstance] = useState<Fetcher>(new Fetcher())
+  const [fetcherInstance] = useState<Fetcher>(() => new Fetcher())
 
   const fetcher = useCallback(async (args: FetcherArgsType) => {
     setIsPending(true)
@@ -106,4 +106,4 @@ const useFetcher = (options?: FetcherOptions) => {
   return [fetcher, { isPending, progresses, currentProgress, cancelAll, tokenRefresh }] as const
 }
 
-export default useFetcher
+export default useCustomFetcher

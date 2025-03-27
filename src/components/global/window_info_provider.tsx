@@ -16,16 +16,16 @@ const WindowInfoProvider = ({ children }: WindowInfoProviderProps) => {
   }, 100)
 
   const themeHandler = (e: MediaQueryListEvent) => {
-    if (theme.by === 'system') {
-      setTheme({ by: 'system', mode: e.matches ? 'dark' : 'light' })
+    if (theme.provider === 'system') {
+      setTheme({ provider: 'system', mode: e.matches ? 'dark' : 'light' })
     }
   }
 
   const init = () => {
     resizeHandler()
-    if (theme.by === 'system') {
+    if (theme.provider === 'system') {
       setTheme({
-        by: 'system',
+        provider: 'system',
         mode: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
       })
     }
