@@ -1,10 +1,10 @@
-import axios, { AxiosProgressEvent } from 'axios'
+import axios, { AxiosError, AxiosProgressEvent, AxiosResponse } from 'axios'
 import { sleep, toQueryString } from '@/utils/common'
 import jwtUtil from '@/utils/jwt'
-import { STATUS } from '@/constants/response_status'
 import { ENV } from '@/constants/env'
+import { RESPONSE_CODE, ResponseCodeValueType } from '@/constants/response_code'
 
-export type ResponseType = { status: number; code: number; data: any }
+export type ApiResponseType<T> = { code: ResponseCodeValueType; data: T }
 export type QueryType = Record<string, string | number | undefined>
 export type ObjectType = Record<string, any>
 export type ProgressType = {
@@ -15,7 +15,7 @@ export type ProgressType = {
   total: number | undefined
   abort?: () => void
 }
-export type FetcherArgsType = {
+export type FetcherArgsType<T> = {
   method: 'GET' | 'POST' | 'PUT' | 'DELETE'
   url: string
   responseType?: 'blob'
@@ -23,8 +23,9 @@ export type FetcherArgsType = {
   query?: QueryType
   body?: ObjectType | FormData
   anonymous?: boolean
-  onSuccess?: (response: ResponseType) => void
-  onError?: (response: ResponseType) => void
+  responseDataType?: T
+  onSuccess?: (response: ApiResponseType<T>) => void
+  onError?: (response: ApiResponseType<T>) => void
   onDownloadProgress?: (progress: ProgressType) => void
   onUploadProgress?: (progress: ProgressType) => void
 
@@ -42,7 +43,7 @@ export class Fetcher {
     Fetcher.instance = this
   }
 
-  public async fetch(args: FetcherArgsType): Promise<any> {
+  public async fetch<T>(args: FetcherArgsType<T>): Promise<ApiResponseType<T>> {
     const {
       method,
       url,
@@ -73,9 +74,10 @@ export class Fetcher {
     }
 
     const contentType = data instanceof FormData ? 'multipart/form-data' : 'application/json'
+    let res = { code: RESPONSE_CODE.UNKNOWN_ERROR, data: null } as ApiResponseType<T>
 
     try {
-      const response = await axios({
+      const axiosResponse = await axios({
         method,
         url: `${ENV.API_BASE_URL}${url}${toQueryString(query)}`,
         responseType,
@@ -91,36 +93,39 @@ export class Fetcher {
         onUploadProgress: (progressEvent: AxiosProgressEvent) => this.progressHandler(progressEvent, onUploadProgress),
       })
 
-      if (!!response) {
-        const { status, data } = response
-        const res = {
-          status,
-          code: data.code,
-          data: data.data,
-        } as ResponseType
+      if (!!axiosResponse) {
+        res = {
+          code: axiosResponse.data.code,
+          data: axiosResponse.data.data,
+        }
+
         onSuccess?.(res)
       }
-      return response
     } catch (error: any) {
-      const { status = STATUS.ERROR.UNKNOWN_ERROR, data = undefined } = {
-        ...error?.response,
-      }
-      const code = data?.code ? data.code : STATUS.ERROR.UNKNOWN_ERROR
-      const res = { status, code, data: null } as ResponseType
+      const {
+        code: axiosCode,
+        response: {
+          data: { code, data },
+        },
+      } = error
 
-      if (!anonymous && status === STATUS.ERROR.FORBIDDEN) {
+      res = { code, data }
+
+      if (!anonymous && (code === RESPONSE_CODE.EXPIRED_TOKEN || code === RESPONSE_CODE.INVALID_TOKEN)) {
         onError?.(res)
         if (await this.tokenRefresh()) {
           await this.fetch(args)
         } else {
           window.location.replace('/login')
         }
-      } else if (error?.code === 'ERR_CANCELED') {
-        onError?.({ ...res, code: STATUS.ERROR.REQUEST_CANCELED })
+      } else if (axiosCode === 'ERR_CANCELED') {
+        onError?.({ code: RESPONSE_CODE.REQUEST_CANCELED, data })
       } else {
         onError?.(res)
       }
     }
+
+    return res
   }
 
   private progressHandler(progressEvent: AxiosProgressEvent, onProgress?: (progress: ProgressType) => void) {
@@ -142,7 +147,10 @@ export class Fetcher {
     onProgress(progress)
   }
 
-  public async tokenRefresh(onSuccess?: (response: ResponseType) => void, onError?: (response: ResponseType) => void) {
+  public async tokenRefresh(
+    onSuccess?: (response: ApiResponseType<any>) => void,
+    onError?: (response: ApiResponseType<any>) => void
+  ) {
     if (Fetcher.isRefreshing) {
       await this.sleepWhileRefreshing()
       return true

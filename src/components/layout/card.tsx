@@ -67,8 +67,10 @@ const CardTransition = (props: CardTransitionProps) => {
       }, durationSec * 1000)
     }
   }, [cloneChildren])
-  const convertedRect = useMemo(() => (rect ? { width: `${rect.width}px`, height: `${rect.height}px` } : {}), [rect])
+
   const customBoxSize = useMemo(() => objUtil.getNotNullish(boxSize), [boxSize])
+  const convertedRect = useMemo(() => (rect ? { width: `${rect.width}px`, height: `${rect.height}px` } : {}), [rect])
+
   const currentBoxStyle = useMemo(
     () =>
       children
@@ -94,7 +96,7 @@ const CardTransition = (props: CardTransitionProps) => {
 
   return (
     <div className={cardTransitionClassName} style={cardTransitionBoxStyle}>
-      <div className='card_transition_content' ref={observer}>
+      <div className='card_transition_content' style={customBoxSize} ref={observer}>
         {deferredChildren}
       </div>
     </div>

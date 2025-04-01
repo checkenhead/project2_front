@@ -1,0 +1,65 @@
+.toggle_button_box {
+  user-select: none;
+  cursor: pointer;
+  > .toggle_button {
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+    width: 3.5rem;
+    height: 2rem;
+    background-color: var(--sub-font-color);
+    transition:
+      background-color 0.3s ease,
+      opacity 0.3s ease;
+
+    > .switch {
+      position: relative;
+      width: calc(2rem - 4px);
+      height: calc(2rem - 4px);
+      margin: 1px;
+      border-radius: 50%;
+      // background-color: #ffffff;
+      overflow: hidden;
+      left: 0;
+      transition: left 0.2s ease;
+
+      > .inactive {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        opacity: 1;
+        transition: opacity 0.3s ease;
+      }
+      > .active {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+      .none_icon {
+        width: 100%;
+        height: 100%;
+        background-color: var(--submit-font-color);
+      }
+    }
+
+    &.active {
+      background-color: var(--submit-button-background-color);
+      > .switch {
+        left: 1.5rem;
+
+        > .inactive {
+          opacity: 0;
+        }
+        > .active {
+          opacity: 1;
+        }
+      }
+    }
+
+    &.disabled {
+      //filter: grayscale(50%);
+      opacity: 0.3;
+    }
+  }
+}

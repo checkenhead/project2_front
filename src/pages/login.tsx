@@ -4,18 +4,27 @@ import Button from '@/components/io/button'
 import { Input } from '@/components/io/input'
 import useCustomState, { VALIDATE_RESULT } from '@/hooks/common/useCustomState'
 import Icon from '@/components/common/icon'
-import { Link } from 'react-router-dom'
-import useCustomFetcher from '@/hooks/common/useFetcher'
-import { useCallback } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import useCustomFetcher from '@/hooks/common/useCustomFetcher.tsx'
+import useUserManager from '@/hooks/user/useUserManager'
 
 const Login = () => {
   const [input, validation] = useCustomState({ username: '', password: '' })
-  const [fetcher, fetcherUtil] = useCustomFetcher()
+  const [, fetcherUtil] = useCustomFetcher()
+  const { login } = useUserManager()
+  const navigate = useNavigate()
 
-  const onClickLogin = () => {
+  const onClickLogin = async () => {
     if (!inputValidate()) return
 
     // api call
+    await login({
+      data: input.state,
+      onError: () => {
+        validation.set.username('아이디를 확인해주세요.')
+        validation.set.password('비밀번호를 확인해주세요.')
+      },
+    })
   }
   const inputValidate = () => {
     return validation.checkAll((key, state) => {
@@ -66,7 +75,7 @@ const Login = () => {
             <Card.ErrorMessage name='password' validation={validation.result} width='100%' />
           </Card.Section>
           <Card.Section>
-            <Button submit onClick={onClickLogin}>
+            <Button submit pending={fetcherUtil.isPending} onClick={onClickLogin}>
               <Flex.Row.Center gap='0.2rem'>
                 <Icon type='login' size='1rem' />
                 로그인

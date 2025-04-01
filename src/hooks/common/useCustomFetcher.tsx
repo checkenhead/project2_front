@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { FetcherArgsType, ResponseType, ProgressType, Fetcher } from '@/utils/fetcher'
+import { FetcherArgsType, ApiResponseType, ProgressType, Fetcher } from '@/utils/fetcher'
 
 type FetcherOptions = {
   /** 다운로드/업로드 취소 */
@@ -27,7 +27,7 @@ const useCustomFetcher = (options?: FetcherOptions) => {
   const [isPending, setIsPending] = useState<boolean>(false)
   const [fetcherInstance] = useState<Fetcher>(() => new Fetcher())
 
-  const fetcher = useCallback(async (args: FetcherArgsType) => {
+  const fetcher = useCallback(async <T,>(args: FetcherArgsType<T>) => {
     setIsPending(true)
     if (cancelable || autoCancel || !!args.onDownloadProgress || !!args.onUploadProgress) {
       let canceled = false
@@ -51,11 +51,11 @@ const useCustomFetcher = (options?: FetcherOptions) => {
         updateProgress({ ...progress, id, abort, status: canceled ? 'CANCELED' : progress.status })
         args.onUploadProgress?.(_progresses.current[id])
       }
-      const onSuccess = (response: ResponseType) => {
+      const onSuccess = (response: ApiResponseType<any>) => {
         updateProgress({ ..._progresses.current[id], status: 'DONE' })
         args.onSuccess?.(response)
       }
-      const onError = (response: ResponseType) => {
+      const onError = (response: ApiResponseType<any>) => {
         updateProgress({ ..._progresses.current[id], status: canceled ? 'CANCELED' : _progresses.current[id].status })
         args.onError?.(response)
       }

@@ -6,8 +6,13 @@ import { UserAuthoritiesValueType } from '@/constants/user'
 /* User */
 export type UserType = {
   id: number
-  name: string
+  username: string
   nickname: string
+  email: string
+  provider: string
+  status: number
+  createdAt: string
+  updatedAt: string
   authorities: Array<UserAuthoritiesValueType>
 }
 export type TokenType = {

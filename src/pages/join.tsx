@@ -5,7 +5,7 @@ import Button from '@/components/io/button.tsx'
 import Icon from '@/components/common/icon.tsx'
 import { Link } from 'react-router-dom'
 import useCustomState, { VALIDATE_RESULT } from '@/hooks/common/useCustomState.tsx'
-import useCustomFetcher from '@/hooks/common/useFetcher.tsx'
+import useCustomFetcher from '@/hooks/common/useCustomFetcher.tsx'
 
 const Join = () => {
   const [input, validation] = useCustomState({
@@ -17,10 +17,21 @@ const Join = () => {
   })
   const [fetcher, fetcherUtil] = useCustomFetcher()
 
-  const onClickJoin = () => {
+  const onClickJoin = async () => {
     if (!inputValidate()) return
 
     // api call
+    await fetcher({
+      method: 'POST',
+      url: '/member/join',
+      body: { ...input.state },
+      onSuccess: (res) => {
+        console.log('onSuccess', res)
+      },
+      onError: (res) => {
+        console.log('onError', res)
+      },
+    })
   }
   const inputValidate = () => {
     return validation.checkAll((key, state) => {
