@@ -10,7 +10,7 @@ export const PostCard = () => {
     <div
       className={'post_card_box'}
       style={{
-        width: '90%',
+        width: '100%',
         // border: '1px solid black',
         // borderRadius: '0.5rem',
         // padding: '0.5rem',

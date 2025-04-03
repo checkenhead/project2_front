@@ -2,20 +2,26 @@ import { Flex } from '@/components/layout/flex'
 import { Card } from '@/components/layout/card'
 import Button from '@/components/io/button'
 import { Input } from '@/components/io/input'
-import useCustomState, { VALIDATE_RESULT } from '@/hooks/common/useCustomState'
+import useCustomState, { VALIDATION_RESULT } from '@/hooks/common/useCustomState'
 import Icon from '@/components/common/icon'
 import { Link, useNavigate } from 'react-router-dom'
 import useCustomFetcher from '@/hooks/common/useCustomFetcher.tsx'
 import useUserManager from '@/hooks/user/useUserManager'
 
 const Login = () => {
-  const [input, validation] = useCustomState({ username: '', password: '' })
+  const [input, validation] = useCustomState({
+    initState: { username: '', password: '' },
+    constraint: {
+      username: { empty: { msg: '아이디를 입력해주세요.' } },
+      password: { empty: { msg: '비밀번호를 입력해주세요.' } },
+    },
+  })
+
   const [, fetcherUtil] = useCustomFetcher()
   const { login } = useUserManager()
-  const navigate = useNavigate()
 
   const onClickLogin = async () => {
-    if (!inputValidate()) return
+    if (!validation.checkAll(() => {})) return
 
     // api call
     await login({
@@ -26,21 +32,6 @@ const Login = () => {
       },
     })
   }
-  const inputValidate = () => {
-    return validation.checkAll((key, state) => {
-      switch (key) {
-        case 'username':
-          if (state[key] === '') return '아이디를 입력해주세요.'
-          break
-        case 'password':
-          if (state[key] === '') return '비밀번호를 입력해주세요.'
-          break
-      }
-      return VALIDATE_RESULT.OK
-    })
-  }
-
-  console.log(validation)
 
   return (
     <Flex.Col.Center width='100vw' height='100vh' gap='1.5rem'>

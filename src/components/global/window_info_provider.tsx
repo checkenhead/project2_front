@@ -15,20 +15,22 @@ const WindowInfoProvider = ({ children }: WindowInfoProviderProps) => {
     setWinSize({ innerWidth, innerHeight })
   }, 100)
 
-  const themeHandler = (e: MediaQueryListEvent) => {
+  const themeHandler = (e?: MediaQueryListEvent) => {
     if (theme.provider === 'system') {
-      setTheme({ provider: 'system', mode: e.matches ? 'dark' : 'light' })
+      const mode = e
+        ? e.matches
+          ? 'dark'
+          : 'light'
+        : window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? 'dark'
+          : 'light'
+      setTheme({ provider: 'system', mode })
     }
   }
 
   const init = () => {
     resizeHandler()
-    if (theme.provider === 'system') {
-      setTheme({
-        provider: 'system',
-        mode: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
-      })
-    }
+    themeHandler()
   }
 
   useLayoutEffect(() => {

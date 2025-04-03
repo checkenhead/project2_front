@@ -41,6 +41,17 @@ export const deepCompare = (valueA: any, valueB: any, strict: boolean = true): b
   })
 }
 
+export const addPostpositionKor = (
+  korStr: string,
+  type: '이/가' | '은/는' | '을/를' | '으로/로',
+  onlyPostposition: boolean = false
+): string => {
+  const code = korStr.charCodeAt(korStr.length - 1)
+  const condition = +((code - 44032) % 28 === 0)
+
+  return (onlyPostposition ? '' : korStr) + type.split('/')[condition]
+}
+
 const objKeys = <K extends keyof T, T extends Record<K, T[K]>>(obj: T) => Object.keys(obj) as K[]
 
 const objMap = <T extends Record<keyof T, unknown>, R extends Record<any, unknown>>(
@@ -77,3 +88,33 @@ export const getClassNames = <T extends object>(prefix: string, props: T, ...key
 }
 
 export const camelToSnakeCase = (str: string) => str.replace(/([A-Z])/g, (letter) => `_${letter.toLowerCase()}`)
+
+export const regExAndTest = (data: string | number, ...regex: RegExp[]): boolean => {
+  const str = typeof data === 'number' ? data.toString() : data
+
+  for (const rx of regex) {
+    if (!rx.test(str)) return false
+  }
+
+  return true
+}
+
+export const regExOrTest = (data: string | number, ...regex: RegExp[]): boolean => {
+  const str = typeof data === 'number' ? data.toString() : data
+
+  for (const rx of regex) {
+    if (rx.test(str)) return true
+  }
+
+  return false
+}
+
+export const regExNorTest = (data: string | number, ...regex: RegExp[]): boolean => {
+  const str = typeof data === 'number' ? data.toString() : data
+
+  for (const rx of regex) {
+    if (rx.test(str)) return false
+  }
+
+  return true
+}

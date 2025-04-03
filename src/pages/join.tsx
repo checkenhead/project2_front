@@ -4,16 +4,36 @@ import { Input } from '@/components/io/input.tsx'
 import Button from '@/components/io/button.tsx'
 import Icon from '@/components/common/icon.tsx'
 import { Link } from 'react-router-dom'
-import useCustomState, { VALIDATE_RESULT } from '@/hooks/common/useCustomState.tsx'
+import useCustomState, { VALIDATION_RESULT } from '@/hooks/common/useCustomState.tsx'
 import useCustomFetcher from '@/hooks/common/useCustomFetcher.tsx'
+import { apiParamsMemberJoin } from '@/api/member/join'
+import { REGEX } from '@/constants/regex'
+import { addPostpositionKor } from '@/utils/common'
 
 const Join = () => {
   const [input, validation] = useCustomState({
-    username: '',
-    nickname: '',
-    password: '',
-    re_password: '',
-    email: '',
+    initState: {
+      username: '',
+      nickname: '',
+      password: '',
+      re_password: '',
+      email: '',
+    },
+    label: {
+      username: '아이디',
+      nickname: '닉네임',
+      password: '비밀번호',
+      re_password: '비밀번호 확인',
+      email: '이메일',
+    },
+    constraint: {
+      empty: { onError: (label) => `${addPostpositionKor(label, '을/를')} 입력해주세요.` },
+      length: {
+        min: 4,
+        max: 30,
+        onError: (label) => `${addPostpositionKor(label, '은/는')} 4~30자만 가능합니다.`,
+      },
+    },
   })
   const [fetcher, fetcherUtil] = useCustomFetcher()
 
@@ -22,9 +42,7 @@ const Join = () => {
 
     // api call
     await fetcher({
-      method: 'POST',
-      url: '/member/join',
-      body: { ...input.state },
+      ...apiParamsMemberJoin({ ...input.state }),
       onSuccess: (res) => {
         console.log('onSuccess', res)
       },
@@ -34,27 +52,36 @@ const Join = () => {
     })
   }
   const inputValidate = () => {
-    return validation.checkAll((key, state) => {
+    return validation.checkAll((key, state, label) => {
       switch (key) {
-        case 'username':
-          if (state[key] === '') return '아이디를 입력해주세요.'
-          break
-        case 'nickname':
-          if (state[key] === '') return '닉네임을 입력해주세요.'
-          break
         case 'password':
-          if (state[key] === '') return '비밀번호를 입력해주세요.'
-          break
         case 're_password':
-          if (state[key] === '') return '비밀번호 확인을 입력해주세요.'
-          break
-        case 'email':
-          if (state[key] === '') return '이메일을 입력해주세요.'
-          break
+          if (state[key] === '') return `${addPostpositionKor(label, '을/를')} 입력해주세요.`
+          else if (state[key].length > 30 || state[key].length < 8)
+            return `${addPostpositionKor(label, '은/는')} 8~30자만 가능합니다.`
+          else return VALIDATION_RESULT.OK
       }
-      return VALIDATE_RESULT.OK
+      return VALIDATION_RESULT.UNCHECK
     })
   }
+
+  // return validation.checkAll((key, state) => {
+  //   if (state[key] === '') return `${displayLabel[key]}를 입력해주세요.`
+  //
+  //   switch (key) {
+  //     case 'username':
+  //       if (state[key].length > 30 || state[key].length < 4) return '아이디는 4~30자만 가능합니다.'
+  //       if (!REGEX.allow(state[key], REGEX.NUMBER, REGEX.ENG, REGEX.UNDERSCORE))
+  //         return "아이디는 영문, 숫자, 특수문자는 '_'만 가능합니다."
+  //       break
+  //     case 'password':
+  //       if (state[key] === '') return '비밀번호를 입력해주세요.'
+  //       break
+  //   }
+  //   return VALIDATE_RESULT.OK
+  // })
+
+  console.log('validation', validation.result)
 
   return (
     <Flex.Col.Center width='100vw' height='100vh' gap='1.5rem'>

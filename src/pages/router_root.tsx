@@ -17,7 +17,7 @@ const RouterRoot = () => {
     <Suspense fallback={<LoadingPage />}>
       <Routes location={location}>
         <Route element={<AuthenticationFilter key={location.pathname} allow={[AUTHORITIES.ADMIN, AUTHORITIES.USER]} />}>
-          <Route path='/:id' element={<Home />} />
+          <Route path='/user/:id' element={<Home />} />
         </Route>
         {/*<Route element={<AuthenticationFilter key={location.pathname} allow={[AUTHORITIES.ADMIN]} />}>*/}
         {/*<Route path='/admin' element={<AdminPage />} />*/}
@@ -28,7 +28,7 @@ const RouterRoot = () => {
         </Route>
         <Route element={<AuthenticationFilter key={location.pathname} allow={[AUTHORITIES.ALL]} />}>
           <Route path='/' element={<Index />} />
-          <Route path='/*' element={<PageNotFound />} />
+          <Route path='*' element={<PageNotFound />} />
         </Route>
       </Routes>
     </Suspense>
