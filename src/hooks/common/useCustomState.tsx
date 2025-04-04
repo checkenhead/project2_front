@@ -1,11 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { objUtil } from '@/utils/common'
-import { RegExOptionsType } from '@/constants/regex'
+import { VALIDATION_RESULT, ValidationResultValueType } from '@/constants/validation'
+
+// props type
 
 type CustomStateProps<T extends InitStateType<T>, L extends LabelType<T>> = {
-  initState: T
+  init: T
   label?: L
-  constraint?: ConstraintType<undefined extends L[keyof L] ? keyof T : L[keyof L] | Exclude<keyof T, keyof L>>
+  constraint?: ConstraintType<ConstraintLabelType<T, L>>
 }
 type InitStateType<T> = { [P in keyof T]: T[P] }
 type LabelType<T> = Partial<Record<keyof T, string>>
@@ -15,44 +17,66 @@ type ConstraintType<T> = {
   size?: { min: number; max: number; onError: ConstraintCallbackType<T> }
 }
 type ConstraintCallbackType<T> = (label: T) => string
+type ConstraintLabelType<T, L> = undefined extends L[keyof L] ? keyof T : L[keyof L] | Exclude<keyof T, keyof L>
 
-type ValidationType<T> = Record<keyof T, { isValid: boolean | undefined; msg: string | undefined }>
+// hook return type
+
+type CustomStateReturnType<T, L> = [StateRelatedType<T>, ValidationRelatedType<T, L>]
+type StateRelatedType<T> = Readonly<{
+  state: T
+  setState: React.Dispatch<React.SetStateAction<T>>
+  set: SetSingleStateType<T>
+  onChange: OnChangeType<T>
+}>
+type ValidationRelatedType<T, L> = Readonly<{
+  isPassed: boolean
+  check: CheckSingleStateType<T, L>
+  checkAll: CheckAllStateType<T, L>
+  reset: ResetResultType<T>
+  result: ValidationType<T>
+  set: SetSingleResultType<T>
+}>
+
+// hook util types
+
+export type ValidationType<T> = Record<keyof T, { isValid: boolean | undefined; msg: string | undefined }>
 type SetSingleStateType<T> = { [P in keyof T]: (setStateAction: React.SetStateAction<T[P]>) => void }
 type OnChangeType<T> = (name: keyof T, value: T[keyof T]) => void
-type CheckSingleStateType<T, L> = { [P in keyof T]: (validator: ValidatorType<T, T[P], L>) => boolean }
-type CheckAllStateType<T, L> = (validator: CommonValidatorType<T, keyof T, L>) => boolean
+type CheckSingleStateType<T, L> = {
+  [P in keyof T]: (validator: ValidatorType<T, T[P], L> | ValidationResultValueType) => boolean
+}
+type CheckAllStateType<T, L> = (validator: CommonValidatorType<T, keyof T, L> | ValidationResultValueType) => boolean
 type ResetResultType<T> = (...keys: Array<keyof T>) => void
-type SetSingleResultType<T> = { [P in keyof T]: (result: ValidateReturnType) => void }
-type ValidatorType<T, V, L> = (value: V, state: T, label: L) => ValidateReturnType
-type CommonValidatorType<T, K, L> = (key: K, state: T, label: L) => ValidateReturnType
-type ValidateReturnType = (typeof VALIDATION_RESULT)[keyof typeof VALIDATION_RESULT]
+type SetSingleResultType<T> = { [P in keyof T]: (result: ValidationResultValueType) => void }
+type ValidatorType<T, V, L> = (value: V, state: T, label: ConstraintLabelType<T, L>) => ValidationResultValueType
+type CommonValidatorType<T, K, L> = (key: K, state: T, label: ConstraintLabelType<T, L>) => ValidationResultValueType
 
-export const VALIDATION_RESULT: { UNCHECK: void | undefined; OK: true; ERROR: string } = {
-  UNCHECK: undefined,
-  OK: true,
-  ERROR: 'Error',
-} as const
-
+/**
+ *
+ * @param init 초기 state
+ * @param label 각 state에 대응하는 label을 지정
+ * @param constraint 모든 state가 공통적으로 갖는 constraint
+ */
 const useCustomState = <T extends InitStateType<T>, L extends LabelType<T>>({
-  initState,
+  init,
   label: _label,
   constraint,
 }: CustomStateProps<T, L>) => {
   const label = useMemo(
     () =>
-      objUtil.map(initState, (key) => ({ [key]: _label?.[key] ?? key.toString() })) as {
-        [P in keyof T]: undefined extends L[keyof L] ? keyof T : L[keyof L] | Exclude<keyof T, keyof L>
+      objUtil.map(init, (key) => ({ [key]: _label?.[key] ?? key.toString() })) as {
+        [P in keyof T]: ConstraintLabelType<T, L>
       },
-    [initState]
+    [init]
   )
-  const keys = useMemo(() => Object.keys(initState) as Array<keyof T>, [initState])
+  const keys = useMemo(() => Object.keys(init) as Array<keyof T>, [init])
 
   const initResult: ValidationType<T> = useMemo(
     () => Object.assign({}, ...keys.map((key) => ({ [key]: { isValid: undefined, msg: undefined } }))),
     [keys]
   )
 
-  const [state, setState] = useState(initState)
+  const [state, setState] = useState(init)
   const [result, setResult] = useState(initResult)
   const [isPassed, setIsPassed] = useState(false)
 
@@ -69,7 +93,7 @@ const useCustomState = <T extends InitStateType<T>, L extends LabelType<T>>({
           }))
         },
       })) as SetSingleStateType<T>,
-    [initState]
+    [init]
   )
 
   const onChange: OnChangeType<T> = useCallback((name, value) => {
@@ -79,15 +103,15 @@ const useCustomState = <T extends InitStateType<T>, L extends LabelType<T>>({
   const checkSingleState = useMemo(
     () =>
       objUtil.map(state, (key, value) => ({
-        [key]: (
-          validator: ValidatorType<
-            T,
-            typeof value,
-            undefined extends L[keyof L] ? keyof T : L[keyof L] | Exclude<keyof T, keyof L>
-          >
-        ) => {
-          // const label = constraint?.[key]?.label ?? key.toString()
-          const validateResult = checkConstraint(key, validator(value, state, label[key]))
+        [key]: (validator: ValidatorType<T, typeof value, L> | ValidationResultValueType) => {
+          const constraintResult = checkConstraint(key)
+          const validateResult =
+            constraintResult !== VALIDATION_RESULT.OK
+              ? constraintResult
+              : typeof validator === 'function'
+                ? validator(value, state, label[key])
+                : validator
+
           const isValid = validateResult === VALIDATION_RESULT.OK
 
           setResult((prev) => {
@@ -100,18 +124,19 @@ const useCustomState = <T extends InitStateType<T>, L extends LabelType<T>>({
 
           return isValid
         },
-      })) as CheckSingleStateType<T, undefined extends L[keyof L] ? keyof T : L[keyof L] | Exclude<keyof T, keyof L>>,
-    [initState]
+      })) as CheckSingleStateType<T, L>,
+    [init]
   )
 
-  const checkAllState: CheckAllStateType<
-    T,
-    undefined extends L[keyof L] ? keyof T : L[keyof L] | Exclude<keyof T, keyof L>
-  > = useCallback(
+  const checkAllState: CheckAllStateType<T, L> = useCallback(
     (validator) => {
       const validateResults = keys.map((key) => {
-        // const label = constraint?.[key]?.label ?? key.toString()
-        return checkConstraint(key, validator(key, state, label[key]))
+        const constraintResult = checkConstraint(key)
+        return constraintResult !== VALIDATION_RESULT.OK
+          ? constraintResult
+          : typeof validator === 'function'
+            ? validator(key, state, label[key])
+            : validator
       })
 
       const newResult = validateResults.map((result, index) => {
@@ -125,13 +150,13 @@ const useCustomState = <T extends InitStateType<T>, L extends LabelType<T>>({
 
       return validateResults.every((result) => result === VALIDATION_RESULT.OK)
     },
-    [initState]
+    [init]
   )
 
   const setSingleResult = useMemo(
     () =>
       objUtil.map(state, (key) => ({
-        [key]: (result: ValidateReturnType) => {
+        [key]: (result: ValidationResultValueType) => {
           setResult((prev) => {
             if (result === VALIDATION_RESULT.UNCHECK) return { ...prev, [key]: { isValid: undefined, msg: undefined } }
 
@@ -142,7 +167,7 @@ const useCustomState = <T extends InitStateType<T>, L extends LabelType<T>>({
           })
         },
       })) as SetSingleResultType<T>,
-    [initState]
+    [init]
   )
 
   const resetResult: ResetResultType<T> = useCallback((...keys) => {
@@ -156,8 +181,7 @@ const useCustomState = <T extends InitStateType<T>, L extends LabelType<T>>({
     }
   }, [])
 
-  const checkConstraint = (key: keyof T, validatorResult: ValidateReturnType): ValidateReturnType => {
-    if (validatorResult !== VALIDATION_RESULT.UNCHECK) return validatorResult
+  const checkConstraint = (key: keyof T): ValidationResultValueType => {
     if (constraint?.empty !== undefined && !state[key]) return constraint.empty.onError(label[key])
     if (
       constraint?.length !== undefined &&
@@ -224,7 +248,7 @@ const useCustomState = <T extends InitStateType<T>, L extends LabelType<T>>({
        */
       set: setSingleResult,
     },
-  ] as const
+  ] as CustomStateReturnType<T, L>
 }
 
 export default useCustomState

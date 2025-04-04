@@ -3,7 +3,7 @@ import React, { cloneElement, ReactNode, useEffect, useMemo, useRef, useState } 
 import { SimpleLayout } from '@/components/layout/simple_layout'
 import { useResizeObserver } from '@/hooks/common/useResizeObserver'
 import { getClassNames, objUtil } from '@/utils/common'
-import { ValidationType } from '@/hooks/common/useCustomState.tsx'
+import { ValidationType } from '@/hooks/common/useCustomState'
 
 type OutlinedStyleType<T> = true extends T ? { outlined?: T; border?: string } : { outlined?: T }
 type ElevatedStyleType<T> = true extends T ? { elevated?: T; boxShadow?: string } : { elevated?: T }

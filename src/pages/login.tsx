@@ -2,18 +2,20 @@ import { Flex } from '@/components/layout/flex'
 import { Card } from '@/components/layout/card'
 import Button from '@/components/io/button'
 import { Input } from '@/components/io/input'
-import useCustomState, { VALIDATION_RESULT } from '@/hooks/common/useCustomState'
+import useCustomState from '@/hooks/common/useCustomState'
 import Icon from '@/components/common/icon'
 import { Link, useNavigate } from 'react-router-dom'
-import useCustomFetcher from '@/hooks/common/useCustomFetcher.tsx'
+import useCustomFetcher from '@/hooks/common/useCustomFetcher'
 import useUserManager from '@/hooks/user/useUserManager'
+import { addPostpositionKor } from '@/utils/common'
+import { VALIDATION_RESULT } from '@/constants/validation'
 
 const Login = () => {
   const [input, validation] = useCustomState({
-    initState: { username: '', password: '' },
+    init: { username: '', password: '' },
+    label: { username: '아이디', password: '비밀번호' },
     constraint: {
-      username: { empty: { msg: '아이디를 입력해주세요.' } },
-      password: { empty: { msg: '비밀번호를 입력해주세요.' } },
+      empty: { onError: (label) => `${addPostpositionKor(label, '을/를')} 입력해주세요.` },
     },
   })
 
@@ -21,7 +23,7 @@ const Login = () => {
   const { login } = useUserManager()
 
   const onClickLogin = async () => {
-    if (!validation.checkAll(() => {})) return
+    if (!validation.checkAll(VALIDATION_RESULT.OK)) return
 
     // api call
     await login({

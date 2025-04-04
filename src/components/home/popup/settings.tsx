@@ -9,7 +9,7 @@ import { themeState } from '@/atoms/global'
 
 export const Settings = () => {
   const [theme, setTheme] = useRecoilState(themeState)
-  const [setting] = useCustomState({ ...theme })
+  const [setting] = useCustomState({ initState: { ...theme } })
 
   useEffect(() => {
     if (!setting.state.provider || !setting.state.mode) return

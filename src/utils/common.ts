@@ -88,33 +88,3 @@ export const getClassNames = <T extends object>(prefix: string, props: T, ...key
 }
 
 export const camelToSnakeCase = (str: string) => str.replace(/([A-Z])/g, (letter) => `_${letter.toLowerCase()}`)
-
-export const regExAndTest = (data: string | number, ...regex: RegExp[]): boolean => {
-  const str = typeof data === 'number' ? data.toString() : data
-
-  for (const rx of regex) {
-    if (!rx.test(str)) return false
-  }
-
-  return true
-}
-
-export const regExOrTest = (data: string | number, ...regex: RegExp[]): boolean => {
-  const str = typeof data === 'number' ? data.toString() : data
-
-  for (const rx of regex) {
-    if (rx.test(str)) return true
-  }
-
-  return false
-}
-
-export const regExNorTest = (data: string | number, ...regex: RegExp[]): boolean => {
-  const str = typeof data === 'number' ? data.toString() : data
-
-  for (const rx of regex) {
-    if (rx.test(str)) return false
-  }
-
-  return true
-}
