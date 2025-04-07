@@ -7,8 +7,8 @@ import { UserAuthoritiesValueType } from '@/constants/user'
 export type UserType = {
   id: number
   username: string
-  nickname: string
-  email: string
+  nickname: string | null
+  email: string | null
   provider: string
   status: number
   createdAt: string

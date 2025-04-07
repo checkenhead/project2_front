@@ -37,6 +37,7 @@ const IconNames = [
   'list',
   'loading',
   'login',
+  'logo',
   'logout',
   'mail',
   'mapPin',

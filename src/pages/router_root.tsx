@@ -2,13 +2,17 @@ import { lazy, Suspense } from 'react'
 import { Route, Routes, useLocation } from 'react-router-dom'
 import AuthenticationFilter from '@/components/global/authentication_filter'
 import { AUTHORITIES } from '@/constants/user'
-import LoadingPage from '@/pages/loading_page'
+import LoadingPage from '@/pages/common/loading_page'
 
-const Index = lazy(() => import('@/pages/index'))
-const Login = lazy(() => import('@/pages/login'))
-const Join = lazy(() => import('@/pages/join'))
-const Home = lazy(() => import('@/pages/home'))
-const PageNotFound = lazy(() => import('@/pages/page_not_found'))
+// common
+const Index = lazy(() => import('@/pages/common'))
+const PageNotFound = lazy(() => import('@/pages/common/page_not_found'))
+
+// user
+const Login = lazy(() => import('@/pages/user/login'))
+const Join = lazy(() => import('@/pages/user/join'))
+const Home = lazy(() => import('@/pages/user/home'))
+const Profile = lazy(() => import('@/pages/user/profile'))
 
 const RouterRoot = () => {
   const location = useLocation()
@@ -18,6 +22,7 @@ const RouterRoot = () => {
       <Routes location={location}>
         <Route element={<AuthenticationFilter key={location.pathname} allow={[AUTHORITIES.ADMIN, AUTHORITIES.USER]} />}>
           <Route path='/user/:id' element={<Home />} />
+          <Route path='/profile_update' element={<Profile />} />
         </Route>
         {/*<Route element={<AuthenticationFilter key={location.pathname} allow={[AUTHORITIES.ADMIN]} />}>*/}
         {/*<Route path='/admin' element={<AdminPage />} />*/}

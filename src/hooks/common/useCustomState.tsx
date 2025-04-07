@@ -18,15 +18,17 @@ type ConstraintType<T> = {
 }
 type ConstraintCallbackType<T> = (label: T) => string
 type ConstraintLabelType<T, L> = undefined extends L[keyof L] ? keyof T : L[keyof L] | Exclude<keyof T, keyof L>
+type ReturnLabelType<T, L, K extends keyof T> = K extends keyof L ? (L[K] extends string ? L[K] : K) : K
 
 // hook return type
 
-type CustomStateReturnType<T, L> = [StateRelatedType<T>, ValidationRelatedType<T, L>]
-type StateRelatedType<T> = Readonly<{
+type CustomStateReturnType<T, L> = [StateRelatedType<T, L>, ValidationRelatedType<T, L>]
+type StateRelatedType<T, L> = Readonly<{
   state: T
   setState: React.Dispatch<React.SetStateAction<T>>
   set: SetSingleStateType<T>
   onChange: OnChangeType<T>
+  label: { [P in keyof T]: ReturnLabelType<T, L, P> }
 }>
 type ValidationRelatedType<T, L> = Readonly<{
   isPassed: boolean
@@ -222,6 +224,7 @@ const useCustomState = <T extends InitStateType<T>, L extends LabelType<T>>({
        */
       set: setSingleState,
       onChange,
+      label,
     },
     {
       /**

@@ -4,7 +4,9 @@ import useUserManager from '@/hooks/user/useUserManager'
 const Index = () => {
   const { user } = useUserManager({ autoLogin: true })
 
-  return <Navigate to={user ? `/user/${user.nickname}` : '/login'} />
+  if (!user) return <Navigate to={'/login'} />
+  else if (!user.nickname) return <Navigate to={'/profile_update'} />
+  else return <Navigate to={`/user/${user.nickname}`} />
 }
 
 export default Index

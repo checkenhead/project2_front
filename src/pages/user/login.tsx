@@ -37,7 +37,10 @@ const Login = () => {
 
   return (
     <Flex.Col.Center width='100vw' height='100vh' gap='1.5rem'>
-      <Card elevated>
+      <Card>
+        <Icon type='logo' size='3rem' />
+      </Card>
+      <Card elevated filled>
         <Flex.Col.Center width='16rem' gap='0.5rem' padding='1rem'>
           <Card.Section>
             <Card.Title>Login</Card.Title>

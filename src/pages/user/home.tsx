@@ -1,11 +1,9 @@
 import { useCallback, useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import useUserManager from '@/hooks/user/useUserManager'
 import { Flex } from '@/components/layout/flex'
 import { Settings } from '@/components/home/popup/settings'
 import { Card } from '@/components/layout/card'
 import Icon from '@/components/common/icon'
-import { PostCard } from '@/components/home/post/post_card'
 import Popup, { usePopup } from '@/hooks/common/usePopup'
 import { TestContent } from '@/components/home/post/TestContent'
 
@@ -22,6 +20,8 @@ const Home = () => {
   const { confirm } = usePopup()
   const { user, logout } = useUserManager()
   const [popupIndex, setPopupIndex] = useState(POPUP_INDEX.CLOSED)
+
+  useEffect(() => {}, [])
 
   const onClickLogout = useCallback(() => {
     confirm({

@@ -1,21 +1,4 @@
-const REGEX_OPTIONS = [
-  'WORD',
-  'NUMBER',
-  'ENG',
-  'ENG_UPPER',
-  'ENG_LOWER',
-  'KOR',
-  'KOR_JAMO',
-  'KOR_COMPOSED',
-  'UNDERSCORE',
-  'EMAIL',
-  'TEL',
-  'DATE',
-] as const
-
-type RegExOptionsType = (typeof REGEX_OPTIONS)[number]
-
-const REGEX_PRESET: Readonly<Record<RegExOptionsType, RegExp>> = {
+const REGEX_PRESET = {
   WORD: /\w/,
   NUMBER: /\d/,
   ENG: /[a-zA-Z]/,
@@ -28,7 +11,9 @@ const REGEX_PRESET: Readonly<Record<RegExOptionsType, RegExp>> = {
   EMAIL: /([a-z0-9_.-]+)@([\da-z.-]+)\.([a-z.]{2,6})/,
   TEL: /\d{3}-\d{4}-\d{4}/,
   DATE: /(19|20)\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])/,
-}
+} as const
+
+type RegExOptionsType = keyof typeof REGEX_PRESET
 
 function is(this: typeof REGEX_PRESET, ...regex: RegExOptionsType[]) {
   const pattern = regex

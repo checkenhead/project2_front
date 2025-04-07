@@ -65,8 +65,8 @@ export const SimpleInput = <T extends Record<keyof T, string>, K extends Extract
   )
 }
 
-type LabeledInputProps = {
-  label: string
+type LabeledInputProps<K extends string, L extends Record<K, string> | string> = {
+  label: L
   fontSize?: string
   width?: string
   height?: string
@@ -75,13 +75,34 @@ type LabeledInputProps = {
   borderRadius?: string
   backgroundColor?: string
 }
-const LabeledInput = <T extends Record<keyof T, string>, K extends Extract<keyof T, string>>(
-  props: Omit<SimpleInputProps<T, K>, 'placeholder'> & LabeledInputProps
+const LabeledInput = <
+  T extends Record<keyof T, string>,
+  K extends Extract<keyof T, string>,
+  L extends Record<K, string> | string,
+>(
+  props: Omit<SimpleInputProps<T, K>, 'placeholder'> & LabeledInputProps<K, L>
 ) => {
-  const { label, fontSize, width, height, padding, border, borderRadius, backgroundColor, ...SimpleInputProps } = props
-  const styles = { width, height, border, borderRadius, backgroundColor, padding }
+  const {
+    label: _label,
+    fontSize,
+    width,
+    height,
+    padding,
+    border,
+    borderRadius,
+    backgroundColor,
+    ...SimpleInputProps
+  } = props
+  const styles = useMemo(
+    () => ({ width, height, border, borderRadius, backgroundColor, padding }),
+    [width, height, border, borderRadius, backgroundColor, padding]
+  )
   const labeledInputBoxStyle = useMemo(() => objUtil.getNotNullish({ fontSize }), [fontSize])
   const labeledInputStyle = useMemo(() => objUtil.getNotNullish(styles), [styles])
+
+  const label = (
+    typeof _label === 'string' ? (_label as string) : (_label as Record<K, L>)[SimpleInputProps.name]
+  ) as string
 
   return (
     <div className='labeled_input_box' style={labeledInputBoxStyle}>
