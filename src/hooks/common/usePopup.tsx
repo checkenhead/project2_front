@@ -1,12 +1,13 @@
 import '@/styles/popup.scss'
-import { useSetRecoilState } from 'recoil'
-import { popupDataState } from '@/atoms/global'
+// import { useSetRecoilState } from 'recoil'
+// import { popupDataState } from '@/atoms/global'
 import React, { cloneElement, ReactNode, useCallback, useEffect, useId, useRef, useState } from 'react'
 
 import Icon from '@/components/common/icon'
 import { Card } from '@/components/layout/card'
 import { Flex } from '@/components/layout/flex'
 import Button from '@/components/io/button.tsx'
+import { usePopupDataAction } from '@/store/usePopupDataStore'
 
 const POPUP_ID_PREFIX = 'popup_'
 
@@ -29,7 +30,8 @@ type AlertProps = {
 }
 
 export const usePopup = () => {
-  const _setPopupData = useSetRecoilState(popupDataState)
+  // const _setPopupData = useSetRecoilState(popupDataState)
+  const { pushPopupData, filterPopupData } = usePopupDataAction()
   const childrenIds = useRef<string[]>([])
 
   const confirm = useCallback((props: ConfirmProps) => {
@@ -154,7 +156,9 @@ export const usePopup = () => {
   }, [])
 
   const setPopupData = useCallback((newPopup: { id: string; node: ReactNode }) => {
-    _setPopupData((prev) => [...prev.filter((popup) => !!document.getElementById(popup.id)), newPopup])
+    // _setPopupData((prev) => [...prev.filter((popup) => !!document.getElementById(popup.id)), newPopup])
+    filterPopupData((popup) => !!document.getElementById(popup.id))
+    pushPopupData(newPopup)
   }, [])
 
   return { confirm, alert, toast }
@@ -209,7 +213,8 @@ export const Container = (props: ContainerProps) => {
   const className = !!props.className ? ` ${props.className}` : ''
   const preventScroll = preventBackgroundScroll ? ' prevent_scroll' : ''
 
-  const setPopupData = useSetRecoilState(popupDataState)
+  // const setPopupData = useSetRecoilState(popupDataState)
+  const { pushPopupData, removePopupData } = usePopupDataAction()
   const [animation, setAnimation] = useState<boolean>(false)
 
   const close = useCallback(() => {
@@ -217,12 +222,14 @@ export const Container = (props: ContainerProps) => {
       setAnimation(false)
       const timer = setTimeout(() => {
         props.onClose?.()
-        setPopupData((prev) => prev.filter((popup) => popup.id !== id))
+        // setPopupData((prev) => prev.filter((popup) => popup.id !== id))
+        removePopupData(id)
         clearTimeout(timer)
       }, 300)
     } else {
       props.onClose?.()
-      setPopupData((prev) => prev.filter((popup) => popup.id !== id))
+      // setPopupData((prev) => prev.filter((popup) => popup.id !== id))
+      removePopupData(id)
     }
   }, [])
 
@@ -246,7 +253,8 @@ export const Container = (props: ContainerProps) => {
 
   useEffect(() => {
     if (!props.autoAllocatedId) {
-      setPopupData((prev) => [...prev, { id, node }])
+      // setPopupData((prev) => [...prev, { id, node }])
+      pushPopupData({ id, node })
     }
   }, [])
 

@@ -2,13 +2,14 @@ import { Flex } from '@/components/layout/flex'
 import { Card } from '@/components/layout/card'
 import Button from '@/components/io/button'
 import { Input } from '@/components/io/input'
-import useCustomState from '@/hooks/common/useCustomState'
+import useCustomState from '@/hooks/state/useCustomState'
 import Icon from '@/components/common/icon'
 import { Link, useNavigate } from 'react-router-dom'
 import useCustomFetcher from '@/hooks/common/useCustomFetcher'
 import useUserManager from '@/hooks/user/useUserManager'
 import { addPostpositionKor } from '@/utils/common'
 import { VALIDATION_RESULT } from '@/constants/validation'
+import Input2 from '@/components/io/input_text'
 
 const Login = () => {
   const [input, validation] = useCustomState({
@@ -56,7 +57,9 @@ const Login = () => {
               }}
             />
             <Card.ErrorMessage name='username' validation={validation.result} width='100%' />
+            {/*<Input2 name='username' label='아이디' value={input.state.username} />*/}
           </Card.Section>
+
           <Card.Section>
             <Input.Labeled
               password

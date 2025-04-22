@@ -20,25 +20,25 @@
   --scrollbar-color: rgba(125, 125, 125, 0.5);
 
   &:has([data-theme='light']) {
-    --background-color: #f9f9f9;
+    --background-color: #f6f6f6;
     --card-background-color: #ffffff;
 
     --normal-button-background-color: #ffffff;
-    --submit-button-background-color: #6495edff;
+    --submit-button-background-color: #6495ed;
     --submit-font-color: #ffffff;
     --font-color: #000000;
     --sub-font-color: #999999ff;
     --placeholder-color: #bbbbbb;
     --border-color: #dddddd;
-    --primary-shadow-color: rgba(0, 0, 0, 0.1);
-    --sub-shadow-color: #ffffff;
+    --primary-shadow-color: rgba(0, 0, 0, 0.25);
+    --sub-shadow-color: rgba(255, 255, 255, 0.5);
   }
 
   &:has([data-theme='dark']) {
     //--background-color: #27282aff;
     --background-color: #191919;
     //--card-background-color: #333333;
-    --card-background-color: #252525;
+    --card-background-color: #1d1d1d;
     --normal-button-background-color: #333333;
     --submit-button-background-color: #6495edcc;
     --submit-font-color: #ffffff;
@@ -46,8 +46,8 @@
     --sub-font-color: #999999ff;
     --placeholder-color: #dddddd;
     --border-color: #191919ff;
-    --primary-shadow-color: #101010;
-    --sub-shadow-color: #151515;
+    --primary-shadow-color: rgba(0, 0, 0, 0.25);
+    --sub-shadow-color: rgba(17, 17, 17, 0.25);
   }
 
   //font-family: -apple-system, Arial, Verdana, Tahoma, 'Trebuchet MS', 'Times New Roman', Georgia;
@@ -74,7 +74,8 @@ body {
   width: 100%;
   height: 100%;
   //scrollbar-gutter: stable both-edges;
-  overflow: scroll;
+  overflow-x: hidden;
+  overflow-y: auto;
 
   transition:
     background-color 0.2s ease,

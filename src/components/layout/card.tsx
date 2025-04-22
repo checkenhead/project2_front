@@ -1,9 +1,9 @@
 import '@/styles/layout.scss'
-import React, { cloneElement, ReactNode, useEffect, useMemo, useRef, useState } from 'react'
+import React, { cloneElement, memo, ReactNode, useEffect, useMemo, useRef, useState } from 'react'
 import { SimpleLayout } from '@/components/layout/simple_layout'
 import { useResizeObserver } from '@/hooks/common/useResizeObserver'
 import { getClassNames, objUtil } from '@/utils/common'
-import { ValidationType } from '@/hooks/common/useCustomState'
+import { ValidationType } from '@/hooks/state/useCustomState'
 
 type OutlinedStyleType<T> = true extends T ? { outlined?: T; border?: string } : { outlined?: T }
 type ElevatedStyleType<T> = true extends T ? { elevated?: T; boxShadow?: string } : { elevated?: T }
@@ -179,18 +179,18 @@ const CardErrorMessage = <T,>({ name, validation, ...rest }: CardErrorMessagePro
   )
 }
 
-export const Card = Object.assign(CardContainer, {
-  Section: SimpleLayout,
-  Transition: CardTransition,
-  Title: Object.assign(CardTitleHeading2, {
-    H1: CardTitleHeading1,
-    H2: CardTitleHeading2,
-    H3: CardTitleHeading3,
-    H4: CardTitleHeading4,
-    H5: CardTitleHeading5,
-    H6: CardTitleHeading6,
+export const Card = Object.assign(memo(CardContainer) as typeof CardContainer, {
+  Section: memo(SimpleLayout) as typeof SimpleLayout,
+  Transition: memo(CardTransition) as typeof CardTransition,
+  Title: Object.assign(memo(CardTitleHeading2) as typeof CardTitleHeading2, {
+    H1: memo(CardTitleHeading1) as typeof CardTitleHeading1,
+    H2: memo(CardTitleHeading2) as typeof CardTitleHeading2,
+    H3: memo(CardTitleHeading3) as typeof CardTitleHeading3,
+    H4: memo(CardTitleHeading4) as typeof CardTitleHeading4,
+    H5: memo(CardTitleHeading5) as typeof CardTitleHeading5,
+    H6: memo(CardTitleHeading6) as typeof CardTitleHeading6,
   }),
-  Text: CardText,
-  ErrorMessage: CardErrorMessage,
-  Divider: CardDivider,
+  Text: memo(CardText) as typeof CardText,
+  ErrorMessage: memo(CardErrorMessage) as unknown as typeof CardErrorMessage,
+  Divider: memo(CardDivider) as typeof CardDivider,
 })

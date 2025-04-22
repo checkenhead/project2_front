@@ -1,0 +1,36 @@
+.drop_down_box {
+  position: relative;
+  display: block;
+  //width: 3rem;
+  //height: 3rem;
+
+  > .dim {
+    position: fixed;
+    width: 100dvw;
+    height: 100dvh;
+    left: 0;
+    top: 0;
+  }
+
+  //> .icon_box {
+  //  position: absolute;
+  //  z-index: 1;
+  //  cursor: pointer;
+  //}
+
+  > .content_wrapper {
+    position: absolute;
+    width: auto;
+    height: auto;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    z-index: 1;
+
+    > .content {
+      white-space: nowrap;
+      // border: 1px solid #cccccc;
+      // border-radius: 5px;
+      // background-color: #ffffff;
+    }
+  }
+}

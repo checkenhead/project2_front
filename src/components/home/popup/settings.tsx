@@ -2,26 +2,28 @@ import { Flex } from '@/components/layout/flex'
 import { Card } from '@/components/layout/card'
 import Icon from '@/components/common/icon'
 import Toggle from '@/components/io/toggle'
-import useCustomState from '@/hooks/common/useCustomState'
+import useCustomState from '@/hooks/state/useCustomState'
 import { useEffect } from 'react'
 import { useRecoilState } from 'recoil'
-import { themeState } from '@/atoms/global'
+import { useThemeActions, useThemeState } from '@/store/useThemeStore'
 
 export const Settings = () => {
-  const [theme, setTheme] = useRecoilState(themeState)
-  const [setting] = useCustomState({ initState: { ...theme } })
+  // const [theme, setTheme] = useRecoilState(themeState)
+  const themeState = useThemeState()
+  const { setThemeState } = useThemeActions()
+  const [setting] = useCustomState({ init: { ...themeState } })
 
   useEffect(() => {
     if (!setting.state.provider || !setting.state.mode) return
-    setTheme(setting.state)
+    setThemeState(setting.state)
   }, [setting.state])
 
   useEffect(() => {
-    if (theme.provider === 'system') {
+    if (themeState.provider === 'system') {
       const systemMode = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
       setting.set.mode((prev) => systemMode)
     }
-  }, [theme.provider])
+  }, [themeState.provider])
 
   return (
     <Card elevated filled backgroundColor='var(--card-background-color)'>
@@ -47,7 +49,7 @@ export const Settings = () => {
           </select>
         </Flex.Row.Between>
         <Card.Transition width='100%'>
-          {theme.provider === 'user' && (
+          {themeState.provider === 'user' && (
             <Flex.Row.Between width='100%'>
               <Card.Title.H3>다크모드</Card.Title.H3>
               <Toggle

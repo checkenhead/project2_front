@@ -1,22 +1,25 @@
-import { themeState, windowSizeState } from '@/atoms/global'
 import useDebounce from '@/hooks/common/useDebounce'
 import { ReactElement, useEffect, useLayoutEffect } from 'react'
-import { useRecoilState, useSetRecoilState } from 'recoil'
+import { useWindowSizeActions } from '@/store/useWindowSizeStore'
+import { useThemeActions, useThemeState } from '@/store/useThemeStore'
 
 type WindowInfoProviderProps = {
   children: ReactElement | null
 }
 const WindowInfoProvider = ({ children }: WindowInfoProviderProps) => {
-  const setWinSize = useSetRecoilState(windowSizeState)
-  const [theme, setTheme] = useRecoilState(themeState)
+  // const setWinSize = useSetRecoilState(windowSizeState)
+  // const [theme, setTheme] = useRecoilState(themeState)
+  const { setWindowSizeState } = useWindowSizeActions()
+  const themeState = useThemeState()
+  const { setThemeState } = useThemeActions()
 
   const resizeHandler = useDebounce(() => {
     const { innerWidth, innerHeight } = window
-    setWinSize({ innerWidth, innerHeight })
+    setWindowSizeState({ innerWidth, innerHeight })
   }, 100)
 
   const themeHandler = (e?: MediaQueryListEvent) => {
-    if (theme.provider === 'system') {
+    if (themeState.provider === 'system') {
       const mode = e
         ? e.matches
           ? 'dark'
@@ -24,7 +27,7 @@ const WindowInfoProvider = ({ children }: WindowInfoProviderProps) => {
         : window.matchMedia('(prefers-color-scheme: dark)').matches
           ? 'dark'
           : 'light'
-      setTheme({ provider: 'system', mode })
+      setThemeState({ provider: 'system', mode })
     }
   }
 
@@ -36,9 +39,9 @@ const WindowInfoProvider = ({ children }: WindowInfoProviderProps) => {
   useLayoutEffect(() => {
     const root = document.getElementById('root')
     if (root) {
-      root.setAttribute('data-theme', theme.mode)
+      root.setAttribute('data-theme', themeState.mode)
     }
-  }, [theme.mode])
+  }, [themeState.mode])
 
   useEffect(() => {
     init()

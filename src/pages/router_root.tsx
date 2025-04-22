@@ -14,6 +14,9 @@ const Join = lazy(() => import('@/pages/user/join'))
 const Home = lazy(() => import('@/pages/user/home'))
 const Profile = lazy(() => import('@/pages/user/profile'))
 
+// test
+const Test = lazy(() => import('@/pages/common/test'))
+
 const RouterRoot = () => {
   const location = useLocation()
 
@@ -33,6 +36,9 @@ const RouterRoot = () => {
         </Route>
         <Route element={<AuthenticationFilter key={location.pathname} allow={[AUTHORITIES.ALL]} />}>
           <Route path='/' element={<Index />} />
+
+          <Route path='/test' element={<Test />} />
+
           <Route path='*' element={<PageNotFound />} />
         </Route>
       </Routes>

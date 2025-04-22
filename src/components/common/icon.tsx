@@ -1,5 +1,5 @@
 import '@/styles/icon.scss'
-import { ComponentType, lazy, LazyExoticComponent, Suspense, useMemo } from 'react'
+import { ComponentType, lazy, LazyExoticComponent, memo, Suspense, useMemo } from 'react'
 import { camelToSnakeCase, getClassNames } from '@/utils/common'
 
 const IconNames = [
@@ -120,4 +120,4 @@ const Icon = (props: IconProps) => {
   )
 }
 
-export default Icon
+export default memo(Icon) as typeof Icon

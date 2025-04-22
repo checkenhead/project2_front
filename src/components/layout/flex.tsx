@@ -1,5 +1,5 @@
 import '@/styles/layout.scss'
-import { useMemo } from 'react'
+import { memo, useMemo } from 'react'
 import { SimpleLayoutProps } from '@/components/layout/simple_layout'
 import { getClassNames, objUtil } from '@/utils/common'
 
@@ -7,7 +7,7 @@ type FlexAlignByDirection<D extends boolean> = true extends D
   ? 'center' | 'start' | 'end' | 'between' | 'around' | 'evenly'
   : 'center' | 'start' | 'end'
 
-type FlexLayoutProps<D extends 'row' | 'col'> = SimpleLayoutProps&{
+type FlexLayoutProps<D extends 'row' | 'col'> = SimpleLayoutProps & {
   direction: D
   xAlign?: FlexAlignByDirection<'row' extends D ? true : false>
   yAlign?: FlexAlignByDirection<'row' extends D ? false : true>

@@ -1,12 +1,11 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useRecoilState } from 'recoil'
-import { userState } from '@/atoms/global'
 import jwtUtil from '@/utils/jwt'
 import { deepCompare } from '@/utils/common'
 import { usePopup } from '@/hooks/common/usePopup'
 import useCustomFetcher from '@/hooks/common/useCustomFetcher.tsx'
 import { ApiResponseType } from '@/utils/fetcher.ts'
+import { useUserState, useUserActions } from '@/store/useUserStore'
 
 type UserManagerProps = {
   /** 로그인 되어있지 않은 경우 refresh token이 있으면 로그인 시도 */
@@ -20,7 +19,9 @@ type LoginDataType = {
 
 const useUserManager = (props?: UserManagerProps) => {
   const { autoLogin = false } = { ...props }
-  const [user, setUser] = useRecoilState(userState)
+  // const [user, setUser] = useRecoilState(userState)
+  const user = useUserState()
+  const { setUserState, resetUserState } = useUserActions()
   const [fetcher, fetcherUtil] = useCustomFetcher()
   const { toast } = usePopup()
   const navigate = useNavigate()
@@ -64,7 +65,8 @@ const useUserManager = (props?: UserManagerProps) => {
       })
 
     jwtUtil.remove()
-    setUser(undefined)
+    // reset(undefined)
+    resetUserState()
     toast({ message: `로그아웃 되었습니다.` })
     navigate(redirectUrl, { replace: true })
   }
@@ -94,7 +96,8 @@ const useUserManager = (props?: UserManagerProps) => {
     const isUpdateRequired = !deepCompare(user, newUser)
 
     if (!user && isValidToken && isUpdateRequired) {
-      setUser(newUser)
+      // setUser(newUser)
+      setUserState(newUser)
       toast({ message: `${username}님, 로그인 되었습니다!` })
     }
 
